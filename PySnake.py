@@ -6,7 +6,7 @@ from sys import exit
 # Elementos
 LARGURA, ALTURA = 600, 400
 AREA_ELEMENTO = 50
-velocidade = 5  # FPS
+VELOCIDADE = 3  # FPS
 fim_jogo= False
 pos_cobra = [[LARGURA/2, ALTURA/2]]
 crescer = False
@@ -14,15 +14,39 @@ comida = False
 
 
 
-class PySnakeGound(pygame.sprite.Sprite):
+class Comida (pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        #self.image = pygame.image.load('')
+
+        self.images = [pygame.image.load('imagens/rato_1.png'),
+                       pygame.image.load('imagens/rato_2.png'),
+                       pygame.image.load('imagens/rato_3.png'),
+                       pygame.image.load('imagens/rato_4.png'),
+                       pygame.image.load('imagens/rato_5.png'),
+                       pygame.image.load('imagens/rato_6.png'),
+                       pygame.image.load('imagens/rato_7.png'),
+                       pygame.image.load('imagens/rato_8.png'),
+                       pygame.image.load('imagens/rato_9.png')]
+
+        self.comida_atual = 0
+
+        self.image = pygame.transform.scale(self.images[self.comida_atual],(AREA_ELEMENTO, AREA_ELEMENTO))
+
+        self.rect = self.image.get_rect()
+
+    def update(self, comida):
+        self.rect = comida
+        self.comida_atual = (self.comida_atual + 1) % 9
+        self.image = pygame.transform.scale(self.images[self.comida_atual],(AREA_ELEMENTO, AREA_ELEMENTO))
 
 pygame.init()
 
+comida_group = pygame.sprite.Group()
+comida2 = Comida()
+comida_group.add(comida2)
+
 BACKGROUND = pygame.image.load('imagens/background.jpg')
-pygame.transform.scale(BACKGROUND,(LARGURA, ALTURA))
+#BACKGROUND = pygame.transform.scale(BACKGROUND,(LARGURA, ALTURA))
 
 def coloca_comida(area, cobra):
 
@@ -33,7 +57,7 @@ def coloca_comida(area, cobra):
         x = round(random.randrange(0, (LARGURA - AREA_ELEMENTO)) / AREA_ELEMENTO) * AREA_ELEMENTO
         y = round(random.randrange(0, (ALTURA - AREA_ELEMENTO)) / AREA_ELEMENTO) * AREA_ELEMENTO
 
-    pygame.draw.rect(tela, (255,0,0), [x, y, area, area])
+    #pygame.draw.rect(tela, (255,0,0), [x, y, area, area])
     return [x,y],True
 
 def coloca_cobra(cobra, sentido, crescer):
@@ -109,8 +133,10 @@ while not fim_jogo:
 
     if not comida:
         pos_comida, comida = coloca_comida(AREA_ELEMENTO, pos_cobra)
+        comida_group.update(pos_comida)
 
-    pygame.draw.rect(tela, (255, 0, 0), [pos_comida[0], pos_comida[1], AREA_ELEMENTO, AREA_ELEMENTO])
+
+    #pygame.draw.rect(tela, (255, 0, 0), [pos_comida[0], pos_comida[1], AREA_ELEMENTO, AREA_ELEMENTO])
     coloca_cobra(pos_cobra, sentido, crescer)
 
     crescer, comida = check_comida(pos_cobra, pos_comida)
@@ -121,5 +147,10 @@ while not fim_jogo:
 
     #tela
 
+    #comida_group.update()
+    if comida:
+        comida_group.draw(tela)
+
     pygame.display.update()
-    clock.tick(velocidade)
+
+    clock.tick(VELOCIDADE)
