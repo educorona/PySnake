@@ -11,6 +11,7 @@ fim_jogo= False
 pos_cobra = [[LARGURA/2, ALTURA/2]]
 crescer = False
 comida = False
+flag_movimento = True
 
 
 
@@ -45,7 +46,7 @@ comida_group = pygame.sprite.Group()
 comida2 = Comida()
 comida_group.add(comida2)
 
-BACKGROUND = pygame.image.load('imagens/background.jpg')
+BACKGROUND = pygame.image.load('imagens/background2.png')
 #BACKGROUND = pygame.transform.scale(BACKGROUND,(LARGURA, ALTURA))
 
 def coloca_comida(area, cobra):
@@ -71,6 +72,7 @@ def coloca_cobra(cobra, sentido, crescer):
 
     for pos in cobra:
         pygame.draw.rect(tela, (255, 255, 255), [pos[0], pos[1], AREA_ELEMENTO, AREA_ELEMENTO])
+    return True
 
 def check_fim_game(cobra, fim_jogo):
     # Colisão nas paredes
@@ -108,26 +110,26 @@ sentido = [0, 0]
 
 while not fim_jogo:
     tela.blit(BACKGROUND,(0,0))
-
     for evento in pygame.event.get():
         # Clicou para sair
         if evento.type == pygame.QUIT:
             pygame.quit()
             exit()
-
-        if evento.type == KEYDOWN:
-            if evento.key == K_LEFT:
-                if sentido != [AREA_ELEMENTO, 0]:
-                    sentido = [-AREA_ELEMENTO, 0]
-            elif evento.key == K_DOWN:
-                if sentido != [0, -AREA_ELEMENTO]:
-                    sentido = [0, AREA_ELEMENTO]
-            elif evento.key == K_RIGHT:
-                if sentido != [-AREA_ELEMENTO, 0]:
-                    sentido = [AREA_ELEMENTO, 0]
-            elif evento.key == K_UP:
-                if sentido != [0, AREA_ELEMENTO]:
-                    sentido = [0, -AREA_ELEMENTO]
+        if flag_movimento:
+            if evento.type == KEYDOWN:
+                flag_movimento = False
+                if evento.key == K_LEFT:
+                    if sentido != [AREA_ELEMENTO, 0]:
+                        sentido = [-AREA_ELEMENTO, 0]
+                elif evento.key == K_DOWN:
+                    if sentido != [0, -AREA_ELEMENTO]:
+                        sentido = [0, AREA_ELEMENTO]
+                elif evento.key == K_RIGHT:
+                    if sentido != [-AREA_ELEMENTO, 0]:
+                        sentido = [AREA_ELEMENTO, 0]
+                elif evento.key == K_UP:
+                    if sentido != [0, AREA_ELEMENTO]:
+                        sentido = [0, -AREA_ELEMENTO]
 
 
 
@@ -137,7 +139,7 @@ while not fim_jogo:
 
 
     #pygame.draw.rect(tela, (255, 0, 0), [pos_comida[0], pos_comida[1], AREA_ELEMENTO, AREA_ELEMENTO])
-    coloca_cobra(pos_cobra, sentido, crescer)
+    flag_movimento = coloca_cobra(pos_cobra, sentido, crescer)
 
     crescer, comida = check_comida(pos_cobra, pos_comida)
 
